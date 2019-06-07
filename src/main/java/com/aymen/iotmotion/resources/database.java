@@ -76,9 +76,9 @@ public class database {
         return false;
     }
 
-    public static boolean isUserExist(User user){
+    public static boolean isUserExist(String userID){
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`users` where `userID`= '"+user.getId()+"';";
+        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`users` where `userID`= '"+userID+"';";
         try {
             ResultSet rs= statement.executeQuery(sql);
             ResultSetMetaData rsmd;
@@ -94,10 +94,10 @@ public class database {
         return false;
     }
 
-    public static boolean deleteUser(User user) {
+    public static boolean deleteUser(String userID) {
 
         if (!isConnected) connect();
-        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`users` WHERE `userID`='" + user.getId() + "';";
+        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`users` WHERE `userID`='" +userID+ "';";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -262,9 +262,9 @@ public class database {
         return false;
     }
 
-    public static boolean isAlarmExist(Alarm alarm){
+    public static boolean isAlarmExist(User user , Device device){
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `alarmID`= '"+alarm.getId()+"';";
+        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `userID`= '"+user.getId()+"' AND `deviceID`= '"+device.getId()+"';";
         try {
             ResultSet rs= statement.executeQuery(sql);
             ResultSetMetaData rsmd;

@@ -2,6 +2,7 @@ package com.aymen.iotmotion.Entity;
 
 import com.aymen.iotmotion.interfaces.UserInterface;
 import com.aymen.iotmotion.resources.AlarmsResource;
+import com.aymen.iotmotion.resources.database;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
@@ -100,14 +101,14 @@ public class User implements UserInterface {
             Date d = new Date();
             int H = d.getHours();
             if (isHourInInterval(H, TimeInterval[0], TimeInterval[2])) {
-                if (!AlarmsResource.isAlarmExistbyUserIDandDeviceID(id, device.getId())) {
-                    AlarmsResource.addAlarm(new Alarm(device, this, Label));
+                if (!database.isAlarmExist(this,device)) {
+                    database.addAlarm(new Alarm(device, this, Label));
                     System.out.println("User: " + getId() + " Notified!");
                 }
             }
         } else {
-            if (!AlarmsResource.isAlarmExistbyUserIDandDeviceID(id, device.getId())) {
-                AlarmsResource.addAlarm(new Alarm(device, this, Label));
+            if (!database.isAlarmExist(this,device)) {
+                database.addAlarm(new Alarm(device, this, Label));
                 System.out.println("User: " + getId() + " Notified!");
             }
         }

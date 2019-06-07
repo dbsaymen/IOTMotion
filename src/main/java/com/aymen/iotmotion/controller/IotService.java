@@ -5,6 +5,7 @@ import com.aymen.iotmotion.Entity.User;
 import com.aymen.iotmotion.resources.AlarmsResource;
 import com.aymen.iotmotion.resources.Devices;
 import com.aymen.iotmotion.resources.Users;
+import com.aymen.iotmotion.resources.database;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +21,7 @@ public class IotService {
     public String addUser(@RequestParam Map<String, String> Params) {
         if (Params.containsKey("UserID")) {
             User u1 = new User(Params.get("UserID"));
-            if (Users.addUser(u1)) {
+            if (!database.isUserExist(Params.get("UserID")) && database.addUser(u1)) {
                 return (u1.getMqttChannel());
             } else {
                 return ("Error!");
@@ -34,7 +35,7 @@ public class IotService {
     @RequestMapping(value = "/remove/user", method = RequestMethod.POST)
     public String removeUser(@RequestParam Map<String, String> Params) {
         if (Params.containsKey("UserID")) {
-            if (Users.removeUserbyID(Params.get("UserID"))) {
+            if (database.isUserExist(Params.get("UserID")) && database.deleteUser(Params.get("UserID"))) {
                 return ("Success!");
             } else {
                 return ("Error!");
