@@ -39,8 +39,6 @@ public class User implements UserInterface {
     }
 
 
-
-
     public int getStatus() {
         return status;
     }
@@ -56,7 +54,6 @@ public class User implements UserInterface {
     public void setTimeInterval(int[] timeInterval) {
         TimeInterval = timeInterval;
     }
-
 
 
     public boolean isTimeIntervalActive() {
@@ -98,20 +95,20 @@ public class User implements UserInterface {
     }
 
     @Override
-    public void update(Device device,String Label) {
+    public void update(Device device, String Label) {
         if (timeIntervalActive) {
             Date d = new Date();
             int H = d.getHours();
-            if (isHourInInterval(H,TimeInterval[0],TimeInterval[2])) {
-                if(!AlarmsResource.isAlarmExistbyUserIDandDeviceID(id,device.getId())){
-                    AlarmsResource.addAlarm(new Alarm(device,this, Label));
-                    System.out.println("User: "+getId()+" Notified!");
+            if (isHourInInterval(H, TimeInterval[0], TimeInterval[2])) {
+                if (!AlarmsResource.isAlarmExistbyUserIDandDeviceID(id, device.getId())) {
+                    AlarmsResource.addAlarm(new Alarm(device, this, Label));
+                    System.out.println("User: " + getId() + " Notified!");
                 }
             }
         } else {
-            if(!AlarmsResource.isAlarmExistbyUserIDandDeviceID(id,device.getId())){
-                AlarmsResource.addAlarm(new Alarm(device,this, Label));
-                System.out.println("User: "+getId()+" Notified!");
+            if (!AlarmsResource.isAlarmExistbyUserIDandDeviceID(id, device.getId())) {
+                AlarmsResource.addAlarm(new Alarm(device, this, Label));
+                System.out.println("User: " + getId() + " Notified!");
             }
         }
 

@@ -76,6 +76,24 @@ public class database {
         return false;
     }
 
+    public static boolean isUserExist(User user){
+        if (!isConnected) connect();
+        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`users` where `userID`= '"+user.getId()+"';";
+        try {
+            ResultSet rs= statement.executeQuery(sql);
+            ResultSetMetaData rsmd;
+            rsmd = rs.getMetaData();
+            int nbCols = rsmd.getColumnCount();
+            if(nbCols>0)
+                return true;
+            else
+                return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static boolean deleteUser(User user) {
 
         if (!isConnected) connect();
@@ -89,25 +107,24 @@ public class database {
         return false;
     }
 
-
     public static boolean addDevice(Device device) {
         if (!isConnected) connect();
-        String status="0";
-        String detector="0";
-        if(device.getStatus())status="1";
-        if(device.getDetector())detector="1";
+        String status = "0";
+        String detector = "0";
+        if (device.getStatus()) status = "1";
+        if (device.getDetector()) detector = "1";
 
-        String sql="INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
+        String sql = "INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
                 "(`DeviceID`," +
                 "`status`," +
                 "`detector`," +
                 "`label`," +
                 "`userID`)" +
                 "VALUES" +
-                "(`"+device.getId()+"`,'" +
-                status+"','" +
-                detector+"'," +
-                "`"+device.getLabel()+"`);";
+                "(`" + device.getId() + "`,'" +
+                status + "','" +
+                detector + "'," +
+                "`" + device.getLabel() + "`);";
 
         try {
             statement.executeUpdate(sql);
@@ -119,18 +136,36 @@ public class database {
 
     }
 
-    public static boolean updateDevice(Device device) {
-        String status="0";
-        String detector="0";
-        if(device.getStatus())status="1";
-        if(device.getDetector())detector="1";
+    public static boolean isDeviceExist(Device device){
         if (!isConnected) connect();
-        String sql="UPDATE `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
+        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `DeviceID`= '"+device.getId()+"';";
+        try {
+            ResultSet rs= statement.executeQuery(sql);
+            ResultSetMetaData rsmd;
+            rsmd = rs.getMetaData();
+            int nbCols = rsmd.getColumnCount();
+            if(nbCols>0)
+                return true;
+            else
+                return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean updateDevice(Device device) {
+        String status = "0";
+        String detector = "0";
+        if (device.getStatus()) status = "1";
+        if (device.getDetector()) detector = "1";
+        if (!isConnected) connect();
+        String sql = "UPDATE `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
                 "SET" +
-                "`status` ="+status+"," +
-                "`detector` = "+detector+"," +
-                "`label` =`"+device.getLabel()+"`" +
-                "WHERE `DeviceID` = `"+device.getId()+"`;";
+                "`status` =" + status + "," +
+                "`detector` = " + detector + "," +
+                "`label` =`" + device.getLabel() + "`" +
+                "WHERE `DeviceID` = `" + device.getId() + "`;";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -142,8 +177,8 @@ public class database {
 
     public static boolean deleteDevice(Device device) {
         if (!isConnected) connect();
-        String sql="DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
-                "WHERE `DeviceID` = `"+device.getId()+"`;";
+        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
+                "WHERE `DeviceID` = `" + device.getId() + "`;";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -155,13 +190,25 @@ public class database {
 
     public static boolean subscribeUser(User user, Device device) {
         if (!isConnected) connect();
-        String sql="INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`subscribed`" +
+        String sql = "INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`subscribed`" +
                 "(`userID`," +
                 "`deviceID`)" +
                 "VALUES" +
-                "`"+user.getId()+"`," +
-                "`"+device.getId()
-                +"`);";
+                "`" + user.getId() + "`," +
+                "`" + device.getId()
+                + "`);";
+        try {
+            statement.executeUpdate(sql);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean isUserSubscribed(User user, Device device){
+        if (!isConnected) connect();
+        String sql ="";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -173,8 +220,8 @@ public class database {
 
     public static boolean unsubscribeUser(User user, Device device) {
         if (!isConnected) connect();
-        String sql="DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`subscribed`" +
-                "WHERE `DeviceID` = `"+device.getId()+"` AND `userID` =  `"+user.getId()+"`;";
+        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`subscribed`" +
+                "WHERE `DeviceID` = `" + device.getId() + "` AND `userID` =  `" + user.getId() + "`;";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -186,14 +233,14 @@ public class database {
 
     public static boolean addAlarm(Alarm alarm) {
         if (!isConnected) connect();
-        String sql="INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`alarm` (" +
+        String sql = "INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`alarm` (" +
                 "`alarmID`, `status`, `creationdate`, `label`, `deviceID`, `userID`) " +
-                "    VALUES ('"+alarm.getId()+"'," +
-                "'"+alarm.getStatus()+"'," +
-                "'"+alarm.getCreationDate()+"'," +
-                "'"+alarm.getLabel()+"'," +
-                "'"+alarm.getDeviceID()+"'," +
-                "'"+alarm.getUserid()+"');";
+                "    VALUES ('" + alarm.getId() + "'," +
+                "'" + alarm.getStatus() + "'," +
+                "'" + alarm.getCreationDate() + "'," +
+                "'" + alarm.getLabel() + "'," +
+                "'" + alarm.getDeviceID() + "'," +
+                "'" + alarm.getUserid() + "');";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -205,7 +252,7 @@ public class database {
 
     public static boolean deleteAlarm(Alarm alarm) {
         if (!isConnected) connect();
-        String sql="DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `alarmID` = '"+alarm.getId()+"';";
+        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `alarmID` = '" + alarm.getId() + "';";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -215,12 +262,30 @@ public class database {
         return false;
     }
 
+    public static boolean isAlarmExist(Alarm alarm){
+        if (!isConnected) connect();
+        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `alarmID`= '"+alarm.getId()+"';";
+        try {
+            ResultSet rs= statement.executeQuery(sql);
+            ResultSetMetaData rsmd;
+            rsmd = rs.getMetaData();
+            int nbCols = rsmd.getColumnCount();
+            if(nbCols>0)
+                return true;
+            else
+                return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static boolean disactivateAlarm(Alarm alarm) {
         if (!isConnected) connect();
-        String sql="UPDATE `gcp_e7a46e60c56bf8a96bf2`.`alarm`" +
+        String sql = "UPDATE `gcp_e7a46e60c56bf8a96bf2`.`alarm`" +
                 "SET" +
                 "`status` = '0'" +
-                "WHERE `alarmID` = '"+alarm.getId()+"'; ";
+                "WHERE `alarmID` = '" + alarm.getId() + "'; ";
         try {
             statement.executeUpdate(sql);
             return true;
