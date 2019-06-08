@@ -10,7 +10,7 @@ public class pushAlarms extends Thread{
         while(true){
             database.pushAllAlarms();
             try {
-                Thread.sleep(2000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

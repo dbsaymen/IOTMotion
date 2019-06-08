@@ -30,9 +30,9 @@ public class MosquittoPublisher {
             connOpts.setUserName("user");
             char[] pass ={'1','2','3','4'};
             connOpts.setPassword(pass);
-            System.out.println("Connecting to broker: "+broker);
+            //System.out.println("Connecting to broker: "+broker);
             sampleClient.connect(connOpts);
-            System.out.println("Connected");
+           // System.out.println("Connected");
 
         }catch(MqttException me){
             System.out.println("reason "+me.getReasonCode());
@@ -62,11 +62,11 @@ public class MosquittoPublisher {
     public void publish(){
         try{
             connect();
-            System.out.println("Publishing message: "+content);
+            //System.out.println("Publishing message: "+content);
             MqttMessage message = new MqttMessage(content.getBytes());
             message.setQos(qos);
             sampleClient.publish(topic, message);
-            System.out.println("Message published");
+            //System.out.println("Message published");
             //disconnect();
         }catch(MqttException me){
             System.out.println("reason "+me.getReasonCode());

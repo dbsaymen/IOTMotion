@@ -11,18 +11,30 @@ public class Alarm {
     private int id;
     private String deviceID;
     private boolean status;
-    private Date creationDate;
+    private String  creationDate;
     private String Label;
 
     public Alarm(String deviceID, String Label) {
         this.deviceID = deviceID;
-        creationDate = new Date();
+        creationDate = new Date().toString();
         status = true;
         this.Label = Label;
     }
 
+    public Alarm(int id, String deviceID, boolean status, String creationDate, String label) {
+        this.id = id;
+        this.deviceID = deviceID;
+        this.status = status;
+        this.creationDate = creationDate;
+        Label = label;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDeviceID() {
@@ -45,11 +57,11 @@ public class Alarm {
         this.status = status;
     }
 
-    public Date getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 

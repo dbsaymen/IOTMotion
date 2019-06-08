@@ -1,8 +1,7 @@
 package com.aymen.iotmotion.resources;
 
-import com.aymen.iotmotion.Entity.Alarm;
-import com.aymen.iotmotion.Entity.Device;
-import com.aymen.iotmotion.Entity.User;
+import com.aymen.iotmotion.Entity.*;
+import com.aymen.iotmotion.callbacks.AlarmCallback;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ public class database {
     private static Statement statement;
     public static boolean isConnected = false;
 
-    public static boolean connect() {
+    public synchronized static boolean  connect() {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -27,7 +26,7 @@ public class database {
         }
     }
 
-    public static boolean disconnect() {
+    public synchronized static boolean disconnect() {
 
         try {
             statement.close();
@@ -40,7 +39,7 @@ public class database {
         }
     }
 
-    public static boolean addUser(User user) {
+    public synchronized static boolean addUser(User user) {
         if (!isConnected) connect();
         String sql = "INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`users` (`userID`, `MqttChannel`, `timeIntervalActive`) VALUES ('" + user.getId() + "', '" + user.getMqttChannel() + "', '0');";
         try {
@@ -52,7 +51,7 @@ public class database {
         return false;
     }
 
-    public static boolean updateUser(User user) {
+    public synchronized static boolean updateUser(User user) {
         int TimeInterval[] = user.getTimeInterval();
         String isactive = "0";
         if (user.isTimeIntervalActive()) {
@@ -77,19 +76,18 @@ public class database {
         return false;
     }
 
-    public static boolean isUserExist(String userID){
+    public synchronized static boolean isUserExist(String userID) {
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`users` where `userID`= '"+userID+"';";
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`users` where `userID`= '" + userID + "';";
         try {
-            ResultSet rs= statement.executeQuery(sql);
-            int size =0;
-            if (rs != null)
-            {
+            ResultSet rs = statement.executeQuery(sql);
+            int size = 0;
+            if (rs != null) {
                 rs.last();    // moves cursor to the last row
                 size = rs.getRow(); // get row id
             }
             rs.close();
-            if(size>0)
+            if (size > 0)
                 return true;
             else
                 return false;
@@ -99,10 +97,10 @@ public class database {
         return false;
     }
 
-    public static boolean deleteUser(String userID) {
+    public synchronized static boolean deleteUser(String userID) {
 
         if (!isConnected) connect();
-        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`users` WHERE `userID`='" +userID+ "';";
+        String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`users` WHERE `userID`='" + userID + "';";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -112,7 +110,7 @@ public class database {
         return false;
     }
 
-    public static boolean addDevice(Device device) {
+    public synchronized static boolean addDevice(Device device) {
         try {
             if (!isConnected || statement.isClosed()) connect();
         } catch (SQLException e) {
@@ -145,19 +143,18 @@ public class database {
 
     }
 
-    public static boolean isDeviceExist(String deviceID){
+    public synchronized static boolean isDeviceExist(String deviceID) {
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `DeviceID`= '"+deviceID+"';";
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `DeviceID`= '" + deviceID + "';";
         try {
-            ResultSet rs= statement.executeQuery(sql);
-            int size =0;
-            if (rs != null)
-            {
+            ResultSet rs = statement.executeQuery(sql);
+            int size = 0;
+            if (rs != null) {
                 rs.last();    // moves cursor to the last row
                 size = rs.getRow(); // get row id
             }
             rs.close();
-            if(size>0)
+            if (size > 0)
                 return true;
             else
                 return false;
@@ -167,7 +164,7 @@ public class database {
         return false;
     }
 
-    public static boolean updateDevice(Device device) {
+    public synchronized static boolean updateDevice(Device device) {
         String status = "0";
         String detector = "0";
         if (device.getStatus()) status = "1";
@@ -188,7 +185,7 @@ public class database {
         return false;
     }
 
-    public static boolean deleteDevice(String deviceID) {
+    public synchronized static boolean deleteDevice(String deviceID) {
         if (!isConnected) connect();
         String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
                 "WHERE `DeviceID` = '" + deviceID + "';";
@@ -201,7 +198,7 @@ public class database {
         return false;
     }
 
-    public static boolean subscribeUser(String userID, String deviceID) {
+    public synchronized static boolean subscribeUser(String userID, String deviceID) {
         if (!isConnected) connect();
         String sql = "INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`subscribed`" +
                 "(`userID`," +
@@ -219,19 +216,18 @@ public class database {
         return false;
     }
 
-    public static boolean isUserSubscribed(String userID, String deviceID){
+    public synchronized static boolean isUserSubscribed(String userID, String deviceID) {
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`subscribed` where `userID`= '"+userID+"' and `deviceID` = '"+deviceID+"' ;";
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`subscribed` where `userID`= '" + userID + "' and `deviceID` = '" + deviceID + "' ;";
         try {
-            ResultSet rs= statement.executeQuery(sql);
-            int size =0;
-            if (rs != null)
-            {
+            ResultSet rs = statement.executeQuery(sql);
+            int size = 0;
+            if (rs != null) {
                 rs.last();    // moves cursor to the last row
                 size = rs.getRow(); // get row id
             }
             rs.close();
-            if(size>0)
+            if (size > 0)
                 return true;
             else
                 return false;
@@ -241,10 +237,10 @@ public class database {
         return false;
     }
 
-    public static boolean unsubscribeUser(String userID, String deviceID) {
+    public synchronized static boolean unsubscribeUser(String userID, String deviceID) {
         if (!isConnected) connect();
         String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`subscribed`" +
-                "WHERE `DeviceID` = '" + deviceID + "' AND `userID` =  '" +userID + "';";
+                "WHERE `DeviceID` = '" + deviceID + "' AND `userID` =  '" + userID + "';";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -254,9 +250,9 @@ public class database {
         return false;
     }
 
-    public static boolean addAlarm(Alarm alarm) {
+    public synchronized static boolean addAlarm(Alarm alarm) {
         if (!isConnected) connect();
-        if(isAlarmExist(alarm.getDeviceID(),alarm.getLabel())) return false;
+        if (isAlarmExist(alarm.getDeviceID(), alarm.getLabel())) return false;
         String sql = "INSERT INTO `gcp_e7a46e60c56bf8a96bf2`.`alarm` (" +
                 " `status`, `creationdate`, `label`, `deviceID`) " +
                 "    VALUES (" +
@@ -273,7 +269,7 @@ public class database {
         return false;
     }
 
-    public static boolean deleteAlarm(Alarm alarm) {
+    public synchronized static boolean deleteAlarm(Alarm alarm) {
         if (!isConnected) connect();
         String sql = "DELETE FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `alarmID` = '" + alarm.getId() + "';";
         try {
@@ -285,19 +281,18 @@ public class database {
         return false;
     }
 
-    public static boolean isAlarmExist( String deviceID, String Label){
+    public synchronized static boolean isAlarmExist(String deviceID, String Label) {
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `deviceID`= '"+deviceID+"' and `label`= '"+Label+"' and `status`='1';";
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `deviceID`= '" + deviceID + "' and `label`= '" + Label + "' and `status`='1';";
         try {
-            ResultSet rs= statement.executeQuery(sql);
-            int size =0;
-            if (rs != null)
-            {
+            ResultSet rs = statement.executeQuery(sql);
+            int size = 0;
+            if (rs != null) {
                 rs.last();    // moves cursor to the last row
                 size = rs.getRow(); // get row id
             }
             rs.close();
-            if(size>0)
+            if (size > 0)
                 return true;
             else
                 return false;
@@ -307,7 +302,7 @@ public class database {
         return false;
     }
 
-    public static boolean disactivateAlarm(int alarmID) {
+    public synchronized static boolean disactivateAlarm(int alarmID) {
         if (!isConnected) connect();
         String sql = "UPDATE `gcp_e7a46e60c56bf8a96bf2`.`alarm` " +
                 "SET " +
@@ -322,25 +317,23 @@ public class database {
         return false;
     }
 
-    public static Device getDeviceByID(String deviceId) {
+    public synchronized static Device getDeviceByID(String deviceId) {
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `DeviceID`= '"+deviceId+"';";
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `DeviceID`= '" + deviceId + "';";
         try {
-            ResultSet rs= statement.executeQuery(sql);
-            if (rs != null)
-            {
+            ResultSet rs = statement.executeQuery(sql);
+            if (rs != null) {
                 rs.last();    // moves cursor to the last row
-                Device d1=new Device(rs.getString(0),rs.getString("label"));
-                boolean status=false;
-                boolean detector=false;
-                if(rs.getInt(1)>0) status=true;
-                if(rs.getInt(2)>0) detector=true;
+                Device d1 = new Device(rs.getString(0), rs.getString("label"));
+                boolean status = false;
+                boolean detector = false;
+                if (rs.getInt(1) > 0) status = true;
+                if (rs.getInt(2) > 0) detector = true;
                 d1.setStatus(status);
                 d1.setDetector(detector);
                 rs.close();
                 return d1;
-            }
-            else
+            } else
                 return null;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -348,13 +341,13 @@ public class database {
         return null;
     }
 
-    public static boolean activateDevice(String deviceId) {
+    public synchronized static boolean activateDevice(String deviceId) {
         String status = "1";
         if (!isConnected) connect();
         String sql = "UPDATE `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
                 " SET " +
                 "`status` = '" + status + "' " +
-                "WHERE `DeviceID` = '" +deviceId + "';";
+                "WHERE `DeviceID` = '" + deviceId + "';";
         try {
             statement.executeUpdate(sql);
             return true;
@@ -364,7 +357,7 @@ public class database {
         return false;
     }
 
-    public static boolean initAllDevices() {
+    public synchronized static boolean initAllDevices() {
         String status = "0";
         if (!isConnected) connect();
         String sql = "UPDATE `gcp_e7a46e60c56bf8a96bf2`.`devices`" +
@@ -380,25 +373,115 @@ public class database {
         return false;
     }
 
-    public static ArrayList<String> detectInactiveDevices(){
-        ArrayList<String> notActive=new ArrayList<String>();
+    public synchronized static ArrayList<String> detectInactiveDevices() {
+        ArrayList<String> notActive = new ArrayList<String>();
         if (!isConnected) connect();
-        String sql ="SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `status`= '0';";
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `status`= '0';";
         try {
             ResultSet rs;
             rs = statement.executeQuery(sql);
 
-            while(rs.next()){
+            while (rs.next()) {
                 notActive.add(rs.getString("DeviceID"));
             }
             rs.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return notActive;
     }
 
-    public static void pushAllAlarms() {
+    public synchronized static ArrayList<Alarm> getActiveAlarms() {
+        ArrayList<Alarm> alarms = new ArrayList<>();
+        if (!isConnected) connect();
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`alarm` where `status`= '1';";
+        try {
+            ResultSet rs;
+
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                alarms.add(new Alarm(rs.getInt("alarmID"),rs.getString("deviceID"),false,rs.getString("creationdate"),rs.getString("label")));
+            }
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return alarms;
+    }
+
+    public synchronized static ArrayList<String> getSubscribedUsers(Alarm alarm) {
+        if (!isConnected) connect();
+        ArrayList<String> users = new ArrayList<>();
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`subscribed` where `deviceID`='" + alarm.getDeviceID() + "';";
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                users.add(rs.getString("userID"));
+            }
+            rs.close();
+            return users;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public synchronized static String getMqttChannel(String userID) {
+        if (!isConnected) connect();
+        String mqttchannel = "";
+
+        String sql = "SELECT * FROM `gcp_e7a46e60c56bf8a96bf2`.`users` where `userID`='" + userID + "';";
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            if (rs != null) {
+                rs.last();
+                mqttchannel = rs.getString("MqttChannel");
+            }
+            rs.close();
+            return mqttchannel;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public synchronized static String getDeviceLabel(String deviceID) {
+        if (!isConnected) connect();
+        String mqttchannel = "";
+
+        String sql = "SELECT `label` FROM `gcp_e7a46e60c56bf8a96bf2`.`devices` where `DeviceID`='" + deviceID + "';";
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            if (rs != null) {
+                rs.last();
+                mqttchannel = rs.getString("label");
+            }
+            rs.close();
+            return mqttchannel;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public synchronized static void pushAllAlarms() {
+        ArrayList<Alarm> alarms = getActiveAlarms();
+        for (Alarm alarm : alarms) {
+            ArrayList<String> users = getSubscribedUsers(alarm);
+            for (String user : users) {
+                String channel = getMqttChannel(user);
+                //new MosquittoPublisher("users/" + channel, alarm.getLabel()+";"+getDeviceLabel(alarm.getDeviceID())+";"+alarm.getId()).publish();
+                MosquittoSubscriber.publish("users/" + channel,alarm.getLabel()+";"+getDeviceLabel(alarm.getDeviceID())+";"+alarm.getId());
+                //System.out.println( alarm.getLabel()+";"+getDeviceLabel(alarm.getDeviceID())+";"+alarm.getId());
+            }
+        }
+
+
 
     }
 }

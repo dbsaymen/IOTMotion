@@ -15,10 +15,11 @@ public class IotmotionApplication  {
 
     public static void main(String[] args) {
         SpringApplication.run(IotmotionApplication.class, args);
-        new MosquittoSubscriber("sensors", new AlarmCallback()).Subscribe();
+        new pushAlarms().start();
+        new MosquittoSubscriber().Subscribe("sensors", new AlarmCallback());
         new initDevices().start();
         new detectInactive().start();
-        //new pushAlarms().start();
+
     }
 
 }

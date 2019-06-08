@@ -131,5 +131,10 @@ public class IotService {
         database.initAllDevices();
     }
 
+    @RequestMapping(value = "/push", method = RequestMethod.POST)
+    public void push(){
+        database.pushAllAlarms();
+    }
+
 
 }

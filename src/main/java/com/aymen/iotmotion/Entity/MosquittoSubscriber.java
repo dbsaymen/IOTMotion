@@ -5,21 +5,24 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Value;
 
 public class MosquittoSubscriber implements MqttCallback {
-    String topic;
-    MqttCallback callback;
-    int qos             = 2;
+    static String topic;
+    static MqttCallback callback;
+    static int qos             = 2;
     @Value("${spring.application.serverMQTT}")
-    String broker       = "tcp://34.66.160.104:4496";
-    String clientId     = "SpringAPI";
-    MemoryPersistence persistence = new MemoryPersistence();
-    MqttClient sampleClient;
-
-    public MosquittoSubscriber(String topic, MqttCallback callback) {
-        this.topic = topic;
-        this.callback=callback;
+    static String broker       = "tcp://34.66.160.104:4496";
+    static String clientId     = "SpringAPI";
+    static MemoryPersistence persistence = new MemoryPersistence();
+    static MqttClient sampleClient;
+    public MosquittoSubscriber(){
+        try {
+            sampleClient=new MqttClient(broker, clientId, persistence);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void connect(){
+
+    public synchronized static void connect(){
         try{
             sampleClient = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
@@ -56,15 +59,37 @@ public class MosquittoSubscriber implements MqttCallback {
     }
 
 
-    public void Subscribe(){
+    public synchronized static void Subscribe(String topic, MqttCallback callback){
+        MosquittoSubscriber.topic = topic;
+        MosquittoSubscriber.callback=callback;
         try{
-            System.out.println(broker);
-            connect();
-            System.out.println("Subscribing...: ");
+            //System.out.println(broker);
+            if(!sampleClient.isConnected())connect();
+            //System.out.println("Subscribing...: ");
             sampleClient.setCallback(callback);
-            sampleClient.subscribe(topic, qos);
-            System.out.println("Subsctibed on topic: "+topic);
 
+            sampleClient.subscribe(topic, qos);
+            //System.out.println("Subsctibed on topic: "+topic);
+
+        }catch(MqttException me){
+            System.out.println("reason "+me.getReasonCode());
+            System.out.println("msg "+me.getMessage());
+            System.out.println("loc "+me.getLocalizedMessage());
+            System.out.println("cause "+me.getCause());
+            System.out.println("excep "+me);
+            me.printStackTrace();
+        }
+    }
+
+    public synchronized static void publish(String topic,String content){
+        try{
+            if(!sampleClient.isConnected()) connect();
+            //System.out.println("Publishing message: "+content);
+            MqttMessage message = new MqttMessage(content.getBytes());
+            message.setQos(qos);
+            sampleClient.publish(topic, message);
+            //System.out.println("Message published");
+            //disconnect();
         }catch(MqttException me){
             System.out.println("reason "+me.getReasonCode());
             System.out.println("msg "+me.getMessage());
