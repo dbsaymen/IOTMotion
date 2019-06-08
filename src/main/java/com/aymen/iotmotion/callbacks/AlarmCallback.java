@@ -15,7 +15,7 @@ public class AlarmCallback implements MqttCallback {
 
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-        System.out.println("\tmessage recived : " + new String(mqttMessage.getPayload()));
+        //System.out.println("\tmessage recived : " + new String(mqttMessage.getPayload()));
         String[] splittedMSG = new String(mqttMessage.getPayload()).split(",");
         int detected = Integer.parseInt(splittedMSG[1]);
         String deviceId = splittedMSG[0];
