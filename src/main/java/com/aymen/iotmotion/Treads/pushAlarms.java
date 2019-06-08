@@ -1,6 +1,6 @@
 package com.aymen.iotmotion.Treads;
 
-import com.aymen.iotmotion.resources.AlarmsResource;
+import com.aymen.iotmotion.resources.database;
 
 public class pushAlarms extends Thread{
 
@@ -8,7 +8,7 @@ public class pushAlarms extends Thread{
     public void run() {
         super.run();
         while(true){
-            AlarmsResource.NotifyAllAlarms();
+            database.pushAllAlarms();
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {

@@ -1,14 +1,8 @@
 package com.aymen.iotmotion.Entity;
 
-import com.aymen.iotmotion.interfaces.UserInterface;
-import com.aymen.iotmotion.resources.AlarmsResource;
-import com.aymen.iotmotion.resources.database;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
-import java.util.Date;
-
-public class User implements UserInterface {
+public class User   {
     @Id
     String id;
     String MqttChannel;
@@ -95,23 +89,5 @@ public class User implements UserInterface {
         }
     }
 
-    @Override
-    public void update(Device device, String Label) {
-        if (timeIntervalActive) {
-            Date d = new Date();
-            int H = d.getHours();
-            if (isHourInInterval(H, TimeInterval[0], TimeInterval[2])) {
-                if (!database.isAlarmExist(this,device)) {
-                    database.addAlarm(new Alarm(device, this, Label));
-                    System.out.println("User: " + getId() + " Notified!");
-                }
-            }
-        } else {
-            if (!database.isAlarmExist(this,device)) {
-                database.addAlarm(new Alarm(device, this, Label));
-                System.out.println("User: " + getId() + " Notified!");
-            }
-        }
 
-    }
 }

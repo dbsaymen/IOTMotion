@@ -18,7 +18,7 @@ public class IotmotionApplication  {
         new MosquittoSubscriber("sensors", new AlarmCallback()).Subscribe();
         new initDevices().start();
         new detectInactive().start();
-        new pushAlarms().start();
+        //new pushAlarms().start();
     }
 
 }
