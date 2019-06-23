@@ -1,9 +1,9 @@
 package com.aymen.iotmotion;
 
 import com.aymen.iotmotion.Entity.MosquittoSubscriber;
-import com.aymen.iotmotion.Treads.detectInactive;
-import com.aymen.iotmotion.Treads.initDevices;
-import com.aymen.iotmotion.Treads.pushAlarms;
+import com.aymen.iotmotion.Threads.detectInactive;
+import com.aymen.iotmotion.Threads.initDevices;
+import com.aymen.iotmotion.Threads.pushAlarms;
 import com.aymen.iotmotion.callbacks.AlarmCallback;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

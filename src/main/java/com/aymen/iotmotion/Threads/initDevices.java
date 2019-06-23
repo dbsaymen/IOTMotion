@@ -1,4 +1,4 @@
-package com.aymen.iotmotion.Treads;
+package com.aymen.iotmotion.Threads;
 
 
 import com.aymen.iotmotion.resources.database;
