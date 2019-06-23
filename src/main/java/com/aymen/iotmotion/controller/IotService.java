@@ -86,7 +86,7 @@ public class IotService {
             if (database.isUserExist(userId) && database.isDeviceExist(deviceID)) {
                 if(database.isUserSubscribed(userId,deviceID)) return "already subscribed!";
                 database.subscribeUser(userId,deviceID);
-                return ("Updete with success!");
+                return ("Update with success!");
             } else {
                 return ("Error!");
             }
@@ -105,7 +105,7 @@ public class IotService {
             String deviceID = Params.get("DeviceID");
             if(database.isUserSubscribed(userId,deviceID)){
                 database.unsubscribeUser(userId,deviceID);
-                return ("Updete with success!");
+                return ("Update with success!");
             }else
             {
                 return "Error!";
